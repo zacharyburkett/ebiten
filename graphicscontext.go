@@ -145,7 +145,7 @@ func (c *graphicsContext) Update(afterFrameUpdate func()) error {
 	} else {
 		op.Filter = FilterLinear
 	}
-	_ = c.screen.DrawImage(c.offscreen, op)
+	c.screen.DrawImage(c.offscreen, op)
 
 	shareable.ResolveStaleImages()
 
