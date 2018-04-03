@@ -499,7 +499,7 @@ func (i *Image) ColorModel() color.Model {
 // Note that important logic should not rely on At result since
 // At might include a very slight error on some machines.
 //
-// At can't be called outside the main loop (ebiten.Run's updating function) starts (as of version 1.4.0-alpha).
+// At can't be called outside the main loop (ebiten.Run's updating function) starts.
 func (i *Image) At(x, y int) color.Color {
 	if atomic.LoadInt32(&isRunning) == 0 {
 		panic("ebiten: (*Image).At is not available outside the main loop so far")
@@ -586,19 +586,16 @@ func (i *Image) resolvePixelsToSet(draw bool) {
 // Dispose is useful to save memory.
 //
 // When the image is disposed, Dipose does nothing.
-//
-// Dipose always return nil as of 1.5.0-alpha.
-func (i *Image) Dispose() error {
+func (i *Image) Dispose() {
 	i.copyCheck()
 	if i.isDisposed() {
-		return nil
+		return
 	}
 	if i.isSubImage() {
-		return nil
+		return
 	}
 	i.mipmap.dispose()
 	i.resolvePixelsToSet(false)
-	return nil
 }
 
 // ReplacePixels replaces the pixels of the image with p.
