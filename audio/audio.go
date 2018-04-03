@@ -40,8 +40,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hajimehoshi/ebiten/internal/hooks"
-	"github.com/hajimehoshi/ebiten/internal/web"
+	"github.com/hajimehoshi/ebiten/v2/internal/hooks"
+	"github.com/hajimehoshi/ebiten/v2/internal/web"
 )
 
 // A Context represents a current state of audio.

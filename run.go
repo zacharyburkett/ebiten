@@ -18,9 +18,9 @@ import (
 	"image"
 	"sync/atomic"
 
-	"github.com/hajimehoshi/ebiten/internal/clock"
-	"github.com/hajimehoshi/ebiten/internal/ui"
-	"github.com/hajimehoshi/ebiten/internal/web"
+	"github.com/hajimehoshi/ebiten/v2/internal/clock"
+	"github.com/hajimehoshi/ebiten/v2/internal/ui"
+	"github.com/hajimehoshi/ebiten/v2/internal/web"
 )
 
 var _ = __EBITEN_REQUIRES_GO_VERSION_1_11_OR_LATER__
@@ -165,7 +165,7 @@ func Run(f func(*Image) error, width, height int, scale float64, title string) e
 // Different from Run, RunWithoutMainLoop returns immediately.
 //
 // Ebiten users should NOT call RunWithoutMainLoop.
-// Instead, functions in github.com/hajimehoshi/ebiten/mobile package calls this.
+// Instead, functions in github.com/hajimehoshi/ebiten/v2/mobile package calls this.
 func RunWithoutMainLoop(f func(*Image) error, width, height int, scale float64, title string) <-chan error {
 	f = (&imageDumper{f: f}).update
 

@@ -21,8 +21,8 @@ import (
 	"math"
 	"sync/atomic"
 
-	"github.com/hajimehoshi/ebiten/internal/graphics"
-	"github.com/hajimehoshi/ebiten/internal/shareable"
+	"github.com/hajimehoshi/ebiten/v2/internal/graphics"
+	"github.com/hajimehoshi/ebiten/v2/internal/shareable"
 )
 
 type mipmap struct {

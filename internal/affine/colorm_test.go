@@ -18,7 +18,7 @@ import (
 	"math"
 	"testing"
 
-	. "github.com/hajimehoshi/ebiten/internal/affine"
+	. "github.com/hajimehoshi/ebiten/v2/internal/affine"
 )
 
 func TestColorMScaleOnly(t *testing.T) {

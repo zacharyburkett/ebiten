@@ -17,7 +17,7 @@ package opengl
 import (
 	"fmt"
 
-	"github.com/hajimehoshi/ebiten/internal/graphics"
+	"github.com/hajimehoshi/ebiten/v2/internal/graphics"
 )
 
 func convertOperation(op graphics.Operation) operation {
