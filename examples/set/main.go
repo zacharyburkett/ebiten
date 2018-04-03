@@ -36,11 +36,7 @@ func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-var offscreen *ebiten.Image
-
-func init() {
-	offscreen, _ = ebiten.NewImage(screenWidth, screenHeight, ebiten.FilterDefault)
-}
+var offscreen = ebiten.NewImage(screenWidth, screenHeight)
 
 func update(screen *ebiten.Image) error {
 	w, h := offscreen.Size()

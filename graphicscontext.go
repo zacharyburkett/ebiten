@@ -62,7 +62,7 @@ func (c *graphicsContext) SetSize(screenWidth, screenHeight int, screenScale flo
 	if c.offscreen != nil {
 		c.offscreen.Dispose()
 	}
-	c.offscreen, _ = NewImage(screenWidth, screenHeight, FilterDefault)
+	c.offscreen = NewImage(screenWidth, screenHeight)
 	c.offscreen.makeVolatile()
 
 	// Round up the screensize not to cause glitches e.g. on Xperia (#622)
