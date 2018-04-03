@@ -607,12 +607,10 @@ func (i *Image) Dispose() {
 // When len(p) is not appropriate, ReplacePixels panics.
 //
 // When the image is disposed, ReplacePixels does nothing.
-//
-// ReplacePixels always returns nil as of 1.5.0-alpha.
-func (i *Image) ReplacePixels(p []byte) error {
+func (i *Image) ReplacePixels(p []byte) {
 	i.copyCheck()
 	if i.isDisposed() {
-		return nil
+		return
 	}
 	// TODO: Implement this.
 	if i.isSubImage() {
@@ -625,7 +623,6 @@ func (i *Image) ReplacePixels(p []byte) error {
 	}
 	i.mipmap.original().ReplacePixels(p)
 	i.disposeMipmaps()
-	return nil
 }
 
 // A DrawImageOptions represents options to render an image on an image.
@@ -715,7 +712,7 @@ func NewImageFromImage(source image.Image, filter Filter) (*Image, error) {
 	}
 	i.addr = i
 
-	_ = i.ReplacePixels(graphics.CopyImage(source))
+	i.ReplacePixels(graphics.CopyImage(source))
 	return i, nil
 }
 
