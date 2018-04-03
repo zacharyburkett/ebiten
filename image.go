@@ -161,9 +161,8 @@ func (i *Image) isSubImage() bool {
 // When the image is disposed, Clear does nothing.
 //
 // Clear always returns nil as of 1.5.0-alpha.
-func (i *Image) Clear() error {
+func (i *Image) Clear() {
 	i.Fill(color.Transparent)
-	return nil
 }
 
 // Fill fills the image with a solid color.
