@@ -130,6 +130,10 @@ func (w *Window) MakeContextCurrent() {
 	w.w.MakeContextCurrent()
 }
 
+func (w *Window) Restore() {
+	w.w.Restore()
+}
+
 func (w *Window) SetCharModsCallback(cbfun CharModsCallback) (previous CharModsCallback) {
 	var gcb glfw.CharModsCallback
 	if cbfun != nil {

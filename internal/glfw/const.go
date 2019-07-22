@@ -78,6 +78,7 @@ const (
 	ContextVersionMinor = Hint(0x00022003)
 	Decorated           = Hint(0x00020005)
 	Focused             = Hint(0x00020001)
+	Maximized           = Hint(0x00020008)
 	Resizable           = Hint(0x00020003)
 	Visible             = Hint(0x00020004)
 )

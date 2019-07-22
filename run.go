@@ -209,6 +209,8 @@ func MonitorSize() (int, int) {
 //
 // Unit is device-independent pixel.
 //
+// SetScreenSize does nothing when the window is maximized.
+//
 // SetScreenSize is concurrent-safe.
 func SetScreenSize(width, height int) {
 	if width <= 0 || height <= 0 {
@@ -224,6 +226,8 @@ func SetScreenSize(width, height int) {
 // If you pass inverse of the device scale,
 // you can disable this automatical device scaling as a result.
 // You can get the device scale by DeviceScaleFactor function.
+//
+// SetScreenScale does nothing when the window is maximized.
 //
 // SetScreenScale is concurrent-safe.
 func SetScreenScale(scale float64) {
@@ -326,21 +330,19 @@ func IsWindowDecorated() bool {
 	return uiDriver().IsWindowDecorated()
 }
 
-// setWindowResizable is unexported until specification is determined (#320)
-//
-// setWindowResizable sets the state if the window is resizable.
+// SetWindowResizable sets the state if the window is resizable.
 //
 // The window is not resizable by default.
 //
 // When the window is resizable, the image size given via the update function can be changed by resizing.
 //
-// setWindowResizable works only on desktops.
-// setWindowResizable does nothing on other platforms.
+// SetWindowResizable works only on desktops.
+// SetWindowResizable does nothing on other platforms.
 //
-// setWindowResizable panics if setWindowResizable is called after Run.
+// SetWindowResizable panics if SetWindowResizable is called after Run.
 //
-// setWindowResizable is concurrent-safe.
-func setWindowResizable(resizable bool) {
+// SetWindowResizable is concurrent-safe.
+func SetWindowResizable(resizable bool) {
 	uiDriver().SetWindowResizable(resizable)
 }
 

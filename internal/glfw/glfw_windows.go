@@ -166,6 +166,11 @@ func (w *Window) MakeContextCurrent() {
 	panicError()
 }
 
+func (w *Window) Restore() {
+	glfwDLL.call("glfwRestoreWindow", w.w)
+	panicError()
+}
+
 func (w *Window) SetCharModsCallback(cbfun CharModsCallback) (previous CharModsCallback) {
 	var gcb uintptr
 	if cbfun != nil {

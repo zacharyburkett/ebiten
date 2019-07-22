@@ -288,7 +288,9 @@ func (u *UserInterface) SetScreenSize(width, height int) {
 		panic("ui: Run is not called yet")
 	}
 	_ = u.t.Call(func() error {
-		// TODO: What if the window is maximized? (#320)
+		if u.window.GetAttrib(glfw.Maximized) == glfw.True {
+			return nil
+		}
 		u.setScreenSize(width, height, u.scale, u.isFullscreen(), u.vsync)
 		return nil
 	})
@@ -299,7 +301,9 @@ func (u *UserInterface) SetScreenScale(scale float64) {
 		panic("ui: Run is not called yet")
 	}
 	_ = u.t.Call(func() error {
-		// TODO: What if the window is maximized? (#320)
+		if u.window.GetAttrib(glfw.Maximized) == glfw.True {
+			return nil
+		}
 		u.setScreenSize(u.width, u.height, scale, u.isFullscreen(), u.vsync)
 		return nil
 	})
@@ -779,7 +783,7 @@ func (u *UserInterface) update(context driver.UIContext) error {
 
 		defer context.ResumeAudio()
 
-		for !u.isRunnableInBackground() && u.window.GetAttrib(glfw.Focused) == 0 {
+		for !u.isRunnableInBackground() && u.window.GetAttrib(glfw.Focused) == glfw.False {
 			context.SuspendAudio()
 			// Wait for an arbitrary period to avoid busy loop.
 			time.Sleep(time.Second / 60)
@@ -799,6 +803,12 @@ func (u *UserInterface) update(context driver.UIContext) error {
 
 	// Update the screen size when the window is resizable.
 	_ = u.t.Call(func() error {
+		// The window is fullscreen when Restore is called to ensure the window is not maimized.
+		// Ignoer this case.
+		if u.window.GetMonitor() != nil {
+			return nil
+		}
+
 		w, h := u.reqWidth, u.reqHeight
 		if w != 0 || h != 0 {
 			u.setScreenSize(w, h, u.scale, u.isFullscreen(), u.vsync)
@@ -886,6 +896,11 @@ func (u *UserInterface) forceSetScreenSize(width, height int, scale float64, ful
 	u.swapBuffers()
 
 	if fullscreen {
+		// Ensure that the window is not maximized since the screen size can be changed on fullscreen mode.
+		if u.window.GetAttrib(glfw.Maximized) == glfw.True {
+			u.window.Restore()
+		}
+
 		if u.origPosX == invalidPos || u.origPosY == invalidPos {
 			u.origPosX, u.origPosY = u.window.GetPos()
 		}
@@ -899,22 +914,25 @@ func (u *UserInterface) forceSetScreenSize(width, height int, scale float64, ful
 			u.window.SetMonitor(nil, 0, 0, 16, 16, 0)
 		}
 
-		oldW, oldH := u.window.GetSize()
-		newW, newH := u.glfwSize()
-		if oldW != newW || oldH != newH {
-			ch := make(chan struct{})
-			u.window.SetFramebufferSizeCallback(func(_ *glfw.Window, _, _ int) {
-				u.window.SetFramebufferSizeCallback(nil)
-				close(ch)
-			})
-			u.window.SetSize(u.glfwSize())
-		event:
-			for {
-				glfw.PollEvents()
-				select {
-				case <-ch:
-					break event
-				default:
+		// If the window is maximized, the framebuffer size is already updated.
+		if u.window.GetAttrib(glfw.Maximized) == glfw.False {
+			oldW, oldH := u.window.GetSize()
+			newW, newH := u.glfwSize()
+			if oldW != newW || oldH != newH {
+				ch := make(chan struct{})
+				u.window.SetFramebufferSizeCallback(func(_ *glfw.Window, _, _ int) {
+					u.window.SetFramebufferSizeCallback(nil)
+					close(ch)
+				})
+				u.window.SetSize(newW, newH)
+			event:
+				for {
+					glfw.PollEvents()
+					select {
+					case <-ch:
+						break event
+					default:
+					}
 				}
 			}
 		}
