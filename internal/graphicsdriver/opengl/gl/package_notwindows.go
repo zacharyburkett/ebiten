@@ -106,6 +106,7 @@ package gl
 // typedef void  (APIENTRYP GPBUFFERSUBDATA)(GLenum  target, GLintptr  offset, GLsizeiptr  size, const void * data);
 // typedef GLenum  (APIENTRYP GPCHECKFRAMEBUFFERSTATUSEXT)(GLenum  target);
 // typedef void  (APIENTRYP GPCOMPILESHADER)(GLuint  shader);
+// typedef void  (APIENTRYP GPCOPYTEXSUBIMAGE2D)(GLenum  target, GLint  level, GLint  xoffset, GLint  yoffset, GLint  x, GLint  y, GLsizei  width, GLsizei  height);
 // typedef GLuint  (APIENTRYP GPCREATEPROGRAM)();
 // typedef GLuint  (APIENTRYP GPCREATESHADER)(GLenum  type);
 // typedef void  (APIENTRYP GPDELETEBUFFERS)(GLsizei  n, const GLuint * buffers);
@@ -188,6 +189,9 @@ package gl
 // }
 // static void  glowCompileShader(GPCOMPILESHADER fnptr, GLuint  shader) {
 //   (*fnptr)(shader);
+// }
+// static void  glowCopyTexSubImage2D(GPCOPYTEXSUBIMAGE2D fnptr, GLenum  target, GLint  level, GLint  xoffset, GLint  yoffset, GLint  x, GLint  y, GLsizei  width, GLsizei  height) {
+//   (*fnptr)(target, level, xoffset, yoffset, x, y, width, height);
 // }
 // static GLuint  glowCreateProgram(GPCREATEPROGRAM fnptr) {
 //   return (*fnptr)();
@@ -363,6 +367,7 @@ var (
 	gpBufferSubData               C.GPBUFFERSUBDATA
 	gpCheckFramebufferStatusEXT   C.GPCHECKFRAMEBUFFERSTATUSEXT
 	gpCompileShader               C.GPCOMPILESHADER
+	gpCopyTexSubImage2D           C.GPCOPYTEXSUBIMAGE2D
 	gpCreateProgram               C.GPCREATEPROGRAM
 	gpCreateShader                C.GPCREATESHADER
 	gpDeleteBuffers               C.GPDELETEBUFFERS
@@ -463,6 +468,10 @@ func CheckFramebufferStatusEXT(target uint32) uint32 {
 
 func CompileShader(shader uint32) {
 	C.glowCompileShader(gpCompileShader, (C.GLuint)(shader))
+}
+
+func CopyTexSubImage2D(target uint32, level int32, xoffset int32, yoffset int32, x int32, y int32, width int32, height int32) {
+	C.glowCopyTexSubImage2D(gpCopyTexSubImage2D, (C.GLenum)(target), (C.GLint)(level), (C.GLint)(xoffset), (C.GLint)(yoffset), (C.GLint)(x), (C.GLint)(y), (C.GLsizei)(width), (C.GLsizei)(height))
 }
 
 func CreateProgram() uint32 {
@@ -708,6 +717,10 @@ func InitWithProcAddrFunc(getProcAddr func(name string) unsafe.Pointer) error {
 	gpCompileShader = (C.GPCOMPILESHADER)(getProcAddr("glCompileShader"))
 	if gpCompileShader == nil {
 		return errors.New("glCompileShader")
+	}
+	gpCopyTexSubImage2D = (C.GPCOPYTEXSUBIMAGE2D)(getProcAddr("glCopyTexSubImage2D"))
+	if gpCopyTexSubImage2D == nil {
+		return errors.New("glCopyTexSubImage2D")
 	}
 	gpCreateProgram = (C.GPCREATEPROGRAM)(getProcAddr("glCreateProgram"))
 	if gpCreateProgram == nil {

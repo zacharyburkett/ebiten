@@ -29,6 +29,20 @@ type Image struct {
 	screen        bool
 }
 
+func (i *Image) Extend(width, height int) (driver.Image, error) {
+	dst, err := i.driver.NewImage(width, height)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := i.ensureFramebuffer(); err != nil {
+		return nil, err
+	}
+	i.driver.context.copyTexSubImage2D(dst.(*Image).textureNative, i.framebuffer, i.width, i.height)
+
+	return dst, nil
+}
+
 func (i *Image) IsInvalidated() bool {
 	return !i.driver.context.isTexture(i.textureNative)
 }

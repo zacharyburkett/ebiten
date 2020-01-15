@@ -279,6 +279,26 @@ void BlitCommandEncoder_SynchronizeTexture(void *blitCommandEncoder,
 #endif
 }
 
+void BlitCommandEncoder_CopyFromTexture(
+    void *blitCommandEncoder, void *sourceTexture, uint_t sourceSlice,
+    uint_t sourceLevel, struct Origin sourceOrigin, struct Size sourceSize,
+    void *destinationTexture, uint_t destinationSlice, uint_t destinationLevel,
+    struct Origin destinationOrigin) {
+  [(id<MTLBlitCommandEncoder>)blitCommandEncoder
+        copyFromTexture:(id<MTLTexture>)sourceTexture
+            sourceSlice:(NSUInteger)sourceSlice
+            sourceLevel:(NSUInteger)sourceLevel
+           sourceOrigin:(MTLOrigin){sourceOrigin.X, sourceOrigin.Y,
+                                    sourceOrigin.Z}
+             sourceSize:(MTLSize){sourceSize.Width, sourceSize.Height,
+                                  sourceSize.Depth}
+              toTexture:(id<MTLTexture>)destinationTexture
+       destinationSlice:(NSUInteger)destinationSlice
+       destinationLevel:(NSUInteger)destinationLevel
+      destinationOrigin:(MTLOrigin){destinationOrigin.X, destinationOrigin.Y,
+                                    destinationOrigin.Z}];
+}
+
 void *Library_MakeFunction(void *library, const char *name) {
   return [(id<MTLLibrary>)library
       newFunctionWithName:[NSString stringWithUTF8String:name]];

@@ -607,6 +607,43 @@ func (c *newScreenFramebufferImageCommand) CanMergeWithDrawTrianglesCommand(dst,
 	return false
 }
 
+// extendCommand is a command to create a new extended image.
+type extendCommand struct {
+	result *Image
+	src    *Image
+	width  int
+	height int
+}
+
+func (c *extendCommand) String() string {
+	return fmt.Sprintf("extend: result: %d, source: %d, width: %d, height: %d", c.result.id, c.src.id, c.width, c.height)
+}
+
+// Exec executes a extendCommand.
+func (c *extendCommand) Exec(indexOffset int) error {
+	var err error
+	c.result.image, err = c.src.image.Extend(c.width, c.height)
+	return err
+}
+
+func (c *extendCommand) NumVertices() int {
+	return 0
+}
+
+func (c *extendCommand) NumIndices() int {
+	return 0
+}
+
+func (c *extendCommand) AddNumVertices(n int) {
+}
+
+func (c *extendCommand) AddNumIndices(n int) {
+}
+
+func (c *extendCommand) CanMergeWithDrawTrianglesCommand(dst, src *Image, color *affine.ColorM, mode driver.CompositeMode, filter driver.Filter, address driver.Address) bool {
+	return false
+}
+
 // ResetGraphicsDriverState resets or initializes the current graphics driver state.
 func ResetGraphicsDriverState() error {
 	return theGraphicsDriver.Reset()

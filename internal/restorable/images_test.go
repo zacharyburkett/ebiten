@@ -726,34 +726,63 @@ func TestExtend(t *testing.T) {
 		return byte(17*i + 13*j + 0x40)
 	}
 
-	const w, h = 16, 16
-	orig := NewImage(w, h, false)
-	pix := make([]byte, 4*w*h)
-	for j := 0; j < h; j++ {
-		for i := 0; i < w; i++ {
-			idx := j*w + i
-			v := pixAt(i, j)
-			pix[4*idx] = v
-			pix[4*idx+1] = v
-			pix[4*idx+2] = v
-			pix[4*idx+3] = v
-		}
+	tests := []struct {
+		Name      string
+		MakeStale bool
+	}{
+		{
+			Name:      "Regular",
+			MakeStale: false,
+		},
+		{
+			Name:      "MakeStale",
+			MakeStale: true,
+		},
 	}
 
-	orig.ReplacePixels(pix, 0, 0, w, h)
-	extended := orig.Extend(w*2, h*2) // After this, orig is already disposed.
+	for _, tc := range tests {
+		tc := tc
+		t.Run(tc.Name, func(t *testing.T) {
+			const w, h = 16, 16
+			orig := NewImage(w, h, false)
+			pix := make([]byte, 4*w*h)
+			for j := 0; j < h; j++ {
+				for i := 0; i < w; i++ {
+					idx := j*w + i
+					v := pixAt(i, j)
+					pix[4*idx] = v
+					pix[4*idx+1] = v
+					pix[4*idx+2] = v
+					pix[4*idx+3] = v
+				}
+			}
 
-	for j := 0; j < h*2; j++ {
-		for i := 0; i < w*2; i++ {
-			got, _, _, _ := extended.At(i, j)
-			want := byte(0)
-			if i < w && j < h {
-				want = pixAt(i, j)
+			orig.ReplacePixels(pix, 0, 0, w, h)
+			extended := orig.Extend(w*2, h*2) // After this, orig is already disposed.
+
+			if tc.MakeStale {
+				extended.MakeStaleForTesting()
+				ResolveStaleImages()
+				if err := RestoreIfNeeded(); err != nil {
+					t.Fatal(err)
+				}
 			}
-			if got != want {
-				t.Errorf("extended.At(%d, %d): got: %v, want: %v", i, j, got, want)
+
+			for j := 0; j < h*2; j++ {
+				for i := 0; i < w*2; i++ {
+					r, g, b, a := extended.At(i, j)
+					got := color.RGBA{R: r, G: g, B: b, A: a}
+					v := byte(0)
+					if i < w && j < h {
+						v = pixAt(i, j)
+					}
+					want := color.RGBA{R: v, G: v, B: v, A: v}
+					if got != want {
+						t.Errorf("extended.At(%d, %d): got: %v, want: %v", i, j, got, want)
+					}
+				}
 			}
-		}
+		})
 	}
 }
 

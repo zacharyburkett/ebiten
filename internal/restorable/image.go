@@ -164,20 +164,27 @@ func (i *Image) Extend(width, height int) *Image {
 	}
 
 	if i.stale {
-		panic("restorable: Extend at a stale image is forbidden")
+		panic("restorable: Extend a stale image is forbidden")
 	}
 
 	if len(i.drawTrianglesHistory) > 0 {
 		panic("restorable: Extend after DrawTriangles is forbidden")
 	}
 
-	newImg := NewImage(width, height, i.volatile)
-	i.basePixels.Apply(newImg.image)
+	if i.screen {
+		panic("restorable: Extend the screen image is forbidden")
+	}
 
 	if i.basePixels.baseColor != (color.RGBA{}) {
 		panic("restorable: baseColor must be empty at Extend")
 	}
-	newImg.basePixels = i.basePixels
+
+	copied := *i
+	newImg := &copied
+	newImg.image = i.image.Extend(width, height)
+	newImg.width = width
+	newImg.height = height
+	theImages.add(newImg)
 
 	i.Dispose()
 

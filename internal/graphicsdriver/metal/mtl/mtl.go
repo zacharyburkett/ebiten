@@ -688,6 +688,20 @@ func (bce BlitCommandEncoder) SynchronizeTexture(texture Texture, slice int, lev
 	C.BlitCommandEncoder_SynchronizeTexture(bce.commandEncoder, texture.texture, C.uint_t(slice), C.uint_t(level))
 }
 
+// Encodes a command to copy image data from a slice of a source texture into a slice of a destination texture.
+//
+// Reference: https://developer.apple.com/documentation/metal/mtlblitcommandencoder/1400754-copyfromtexture
+func (bce BlitCommandEncoder) Copy(
+	sourceTexture Texture, sourceSlice int, sourceLevel int, sourceOrigin Origin, sourceSize Size,
+	destinationTexture Texture, destinationSlice int, destinationLevel int, destinationOrigin Origin) {
+	so := sourceOrigin.c()
+	ss := sourceSize.c()
+	do := destinationOrigin.c()
+	C.BlitCommandEncoder_CopyFromTexture(bce.commandEncoder,
+		sourceTexture.texture, C.uint_t(sourceSlice), C.uint_t(sourceLevel), so, ss,
+		destinationTexture.texture, C.uint_t(destinationSlice), C.uint_t(destinationLevel), do)
+}
+
 // Library is a collection of compiled graphics or compute functions.
 //
 // Reference: https://developer.apple.com/documentation/metal/mtllibrary.
@@ -802,16 +816,8 @@ type Region struct {
 
 func (r *Region) c() C.struct_Region {
 	return C.struct_Region{
-		Origin: C.struct_Origin{
-			X: C.uint_t(r.Origin.X),
-			Y: C.uint_t(r.Origin.Y),
-			Z: C.uint_t(r.Origin.Z),
-		},
-		Size: C.struct_Size{
-			Width:  C.uint_t(r.Size.Width),
-			Height: C.uint_t(r.Size.Height),
-			Depth:  C.uint_t(r.Size.Depth),
-		},
+		Origin: r.Origin.c(),
+		Size:   r.Size.c(),
 	}
 }
 
@@ -821,11 +827,27 @@ func (r *Region) c() C.struct_Region {
 // Reference: https://developer.apple.com/documentation/metal/mtlorigin.
 type Origin struct{ X, Y, Z int }
 
+func (o *Origin) c() C.struct_Origin {
+	return C.struct_Origin{
+		X: C.uint_t(o.X),
+		Y: C.uint_t(o.Y),
+		Z: C.uint_t(o.Z),
+	}
+}
+
 // Size represents the set of dimensions that declare the size of an object,
 // such as an image, texture, threadgroup, or grid.
 //
 // Reference: https://developer.apple.com/documentation/metal/mtlsize.
 type Size struct{ Width, Height, Depth int }
+
+func (s *Size) c() C.struct_Size {
+	return C.struct_Size{
+		Width:  C.uint_t(s.Width),
+		Height: C.uint_t(s.Height),
+		Depth:  C.uint_t(s.Depth),
+	}
+}
 
 // RegionMake2D returns a 2D, rectangular region for image or texture data.
 //

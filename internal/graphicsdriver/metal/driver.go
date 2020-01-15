@@ -828,3 +828,26 @@ func (i *Image) ReplacePixels(args []*driver.ReplacePixelsArgs) {
 		return nil
 	})
 }
+
+func (i *Image) Extend(width, height int) (driver.Image, error) {
+	dst, err := i.driver.NewImage(width, height)
+	if err != nil {
+		return nil, err
+	}
+
+	i.driver.t.Call(func() error {
+		cb := i.driver.cq.MakeCommandBuffer()
+		bce := cb.MakeBlitCommandEncoder()
+		size := mtl.Size{
+			Width:  i.width,
+			Height: i.height,
+			Depth:  1,
+		}
+		bce.Copy(dst.(*Image).texture, 0, 0, mtl.Origin{}, size, i.texture, 0, 0, mtl.Origin{})
+		bce.EndEncoding()
+		cb.Commit()
+		return nil
+	})
+
+	return dst, nil
+}

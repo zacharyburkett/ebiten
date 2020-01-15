@@ -90,3 +90,29 @@ func TestReplacePixelsPartAfterDrawTriangles(t *testing.T) {
 	dst.DrawTriangles(src, vs, is, nil, driver.CompositeModeSourceOver, driver.FilterNearest, driver.AddressClampToZero)
 	dst.ReplacePixels(make([]byte, 4), 0, 0, 1, 1)
 }
+
+func TestExtend(t *testing.T) {
+	const w, h = 16, 16
+	pix0 := make([]byte, 4*w*h)
+	for i := range pix0 {
+		pix0[i] = 0xff
+	}
+
+	img0 := NewImage(w, h)
+	img0.ReplacePixels(pix0, 0, 0, w, h)
+	img1 := img0.Extend(w*2, h*2)
+	img1.ReplacePixels(pix0, w, 0, w, h)
+
+	pix1 := img1.Pixels()
+	for j := 0; j < h; j++ {
+		for i := 0; i < w; i++ {
+			idx := 4 * (i + w*2*j)
+			got := color.RGBA{R: pix1[idx], G: pix1[idx+1], B: pix1[idx+2], A: pix1[idx+3]}
+			want := color.RGBA{R: 0xff, G: 0xff, B: 0xff, A: 0xff}
+			if got != want {
+				t.Errorf("extended image at(%d, %d): got %v, want: %v", i, j, got, want)
+				return
+			}
+		}
+	}
+}

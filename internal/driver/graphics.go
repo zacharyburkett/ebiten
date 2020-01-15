@@ -38,6 +38,7 @@ type Graphics interface {
 }
 
 type Image interface {
+	Extend(width, height int) (Image, error)
 	Dispose()
 	IsInvalidated() bool
 	Pixels() ([]byte, error)

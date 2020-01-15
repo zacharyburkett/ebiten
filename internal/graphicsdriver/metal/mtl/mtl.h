@@ -162,6 +162,11 @@ void BlitCommandEncoder_Synchronize(void *blitCommandEncoder, void *resource);
 void BlitCommandEncoder_SynchronizeTexture(void *blitCommandEncoder,
                                            void *texture, uint_t slice,
                                            uint_t level);
+void BlitCommandEncoder_CopyFromTexture(
+    void *blitCommandEncoder, void *sourceTexture, uint_t sourceSlice,
+    uint_t sourceLevel, struct Origin sourceOrigin, struct Size sourceSize,
+    void *destinationTexture, uint_t destinationSlice, uint_t destinationLevel,
+    struct Origin destinationOrigin);
 
 void *Library_MakeFunction(void *library, const char *name);
 

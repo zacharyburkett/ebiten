@@ -566,3 +566,12 @@ func (c *context) replacePixelsWithPBO(buffer buffer, t textureNative, width, he
 		return nil
 	})
 }
+
+func (c *context) copyTexSubImage2D(t textureNative, framebuffer *framebuffer, width, height int) {
+	c.bindFramebuffer(framebuffer.native) // source
+	c.bindTexture(t)                      // destination
+	_ = c.t.Call(func() error {
+		gl.CopyTexSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 0, 0, int32(width), int32(height))
+		return nil
+	})
+}

@@ -92,6 +92,24 @@ func NewScreenFramebufferImage(width, height int) *Image {
 	return i
 }
 
+func (i *Image) Extend(width, height int) *Image {
+	i.resolveBufferedReplacePixels()
+
+	img := &Image{
+		width:  width,
+		height: height,
+		id:     genNextID(),
+	}
+	c := &extendCommand{
+		result: img,
+		src:    i,
+		width:  width,
+		height: height,
+	}
+	theCommandQueue.Enqueue(c)
+	return img
+}
+
 func (i *Image) resolveBufferedReplacePixels() {
 	if len(i.bufferedRP) == 0 {
 		return
