@@ -17,6 +17,11 @@ type player struct {
 	img *ebiten.Image
 }
 
+const (
+	screenWidth  = 1024
+	screenHeight = 512
+)
+
 var (
 	// viewport offsets
 	camX, camY float64
@@ -49,20 +54,23 @@ func update(screen *ebiten.Image) error {
 		plr.x += plr.speed
 	}
 
+	// update camera offset to follow player
+	camX, camY = plr.x-(screenWidth/2), plr.y-(screenHeight/2)
+
 	// skip frame if running slowly
 	if ebiten.IsDrawingSkipped() {
 		return nil
 	}
 
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(plr.x, plr.y)
+	op.GeoM.Translate(plr.x-camX, plr.y-camY)
 	screen.DrawImage(plr.img, op)
 
 	return nil
 }
 
 func main() {
-	if err := ebiten.Run(update, 1024, 512, 1, "Isometric Example"); err != nil {
+	if err := ebiten.Run(update, screenWidth, screenHeight, 1, "Isometric Example"); err != nil {
 		log.Fatal(err)
 	}
 }
