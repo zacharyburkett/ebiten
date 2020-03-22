@@ -34,6 +34,7 @@
 //go:generate file2byteslice -package=platformer -input=./images/platformer/left.png -output=./images/platformer/left.go -var=Left_png
 //go:generate file2byteslice -package=platformer -input=./images/platformer/mainchar.png -output=./images/platformer/mainchar.go -var=MainChar_png
 //go:generate file2byteslice -package=platformer -input=./images/platformer/right.png -output=./images/platformer/right.go -var=Right_png
+//go:generate file2byteslice -package=isometric -input=./images/isometric/tiles.png -output=./images/isometric/tiles.go -var=Tiles_png
 //go:generate gofmt -s -w .
 
 package resources
